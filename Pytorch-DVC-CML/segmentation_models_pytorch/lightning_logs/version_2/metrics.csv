@@ -1,0 +1,3 @@
+valid_per_image_iou,valid_dataset_iou,epoch,step,train_per_image_iou,train_dataset_iou
+0.8777202367782593,0.8912569880485535,0,206,,
+,,0,206,0.8124725818634033,0.8215973973274231
