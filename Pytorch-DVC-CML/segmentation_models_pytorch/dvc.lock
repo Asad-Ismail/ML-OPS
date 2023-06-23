@@ -1,0 +1,27 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python train_segmentation.py
+    deps:
+    - path: pets_data
+      hash: md5
+      md5: f24efadffa0d858ad2f599e2fb934b36.dir
+      size: 821045236
+      nfiles: 25864
+    - path: train_segmentation.py
+      hash: md5
+      md5: fef6e201e77c74f3652bc1a14d547226
+      size: 2126
+    params:
+      params.yaml:
+        train.epochs: 2
+    outs:
+    - path: dvclive/metrics.json
+      hash: md5
+      md5: df2eeac6528d02cd8fbf8d2944fd66a3
+      size: 202
+    - path: modelCheckpoints/
+      hash: md5
+      md5: 38a6d1f1cf615573103ff0fa53598980.dir
+      size: 278142923
+      nfiles: 1
