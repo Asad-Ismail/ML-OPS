@@ -24,9 +24,9 @@ jobs:
           #dvc remote add -d storage s3://mybucket/data
           #dvc config core.autosave true
           #dvc config core.check_update false
-          echo '[user]' >> .dvc/config
-          echo '  name = github-actions' >> .dvc/config
-          echo '  email = actions@github.com' >> .dvc/config
+          #echo '[user]' >> .dvc/config
+          #echo '  name = github-actions' >> .dvc/config
+          #echo '  email = actions@github.com' >> .dvc/config
 
       - name: Pull data and model
         run: |
