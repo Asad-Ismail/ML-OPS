@@ -1,0 +1,10 @@
+segmentation-models-pytorch
+pytorch-lightning
+torch
+torchvision
+pretrainedmodels
+efficientnet-pytorch
+timm
+tqdm
+pillow
+lightning

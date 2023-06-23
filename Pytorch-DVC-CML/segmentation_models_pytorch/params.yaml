@@ -1,0 +1,3 @@
+train:
+  epochs: 12
+  learning_rate: 0.001
