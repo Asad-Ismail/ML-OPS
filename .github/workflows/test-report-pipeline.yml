@@ -1,0 +1,52 @@
+name: test-report-pipeline
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: cml_run
+        uses: iterative/setup-cml@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup environment
+        run: |
+          # Your setup commands here.
+          # For example:
+          pip install -r requirements.txt
+          pip install dvc
+
+      - name: Configure DVC
+        run: |
+          #dvc init --no-scm --force
+          #dvc remote add -d storage s3://mybucket/data
+          #dvc config core.autosave true
+          #dvc config core.check_update false
+          echo '[user]' >> .dvc/config
+          echo '  name = github-actions' >> .dvc/config
+          echo '  email = actions@github.com' >> .dvc/config
+
+      - name: Pull data and model
+        run: |
+          dvc pull
+
+          #- name: Run tests
+          #run: |
+          # Command to run your tests
+          # python -m unittest
+
+          #- name: Push results (if any)
+          #run: |
+          #dvc push
+
+      - name: CML Report
+        run: |
+          # Extract metrics from dvclive
+          echo "## Metrics" >> report.md
+          dvc exp show --no-pager >> report.md
+
+          # Send CML report
+          cml-send-comment report.md
+
