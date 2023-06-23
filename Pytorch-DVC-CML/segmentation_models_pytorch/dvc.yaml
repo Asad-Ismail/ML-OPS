@@ -1,0 +1,13 @@
+stages:
+  train:
+    cmd: python train_segmentation.py
+    deps:
+    - pets_data
+    - train_segmentation.py
+    params:
+    - train.epochs
+    outs:
+    - modelCheckpoints/
+    metrics:
+    - dvclive/metrics.json:
+        cache: false
