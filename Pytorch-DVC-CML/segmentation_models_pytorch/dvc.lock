@@ -14,14 +14,14 @@ stages:
       size: 2126
     params:
       params.yaml:
-        train.epochs: 2
+        train.epochs: 13
     outs:
     - path: dvclive/metrics.json
       hash: md5
-      md5: df2eeac6528d02cd8fbf8d2944fd66a3
+      md5: 4d84c46f749ac61ef209dba3b54f2078
       size: 202
     - path: modelCheckpoints/
       hash: md5
-      md5: 38a6d1f1cf615573103ff0fa53598980.dir
+      md5: 694d01e0328b6a74a913b10e8cafce51.dir
       size: 278142923
       nfiles: 1
