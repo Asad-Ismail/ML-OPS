@@ -1,7 +1,7 @@
 {
-    "valid_per_image_iou": 0.8938812017440796,
-    "valid_dataset_iou": 0.9033231735229492,
-    "step": 4,
-    "train_per_image_iou": 0.8957924842834473,
-    "train_dataset_iou": 0.9059761762619019
+    "valid_per_image_iou": 0.8960855007171631,
+    "valid_dataset_iou": 0.904810905456543,
+    "step": 26,
+    "train_per_image_iou": 0.9465034604072571,
+    "train_dataset_iou": 0.9548320174217224
 }
