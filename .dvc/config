@@ -1,5 +1,7 @@
 [core]
-    remote = storage
+    remote = mygdrive
     autostage = true
 ['remote "storage"']
     url = s3://470086202700-sagemaker/dvc_test/
+['remote "mygdrive"']
+    url = https://drive.google.com/drive/folders/185kVyLLIeCcS3QrPNGnTdl7E4vx5o1gW?usp=drive_link
