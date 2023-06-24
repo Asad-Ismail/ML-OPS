@@ -4,12 +4,9 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: cml_run
-        uses: iterative/setup-cml@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: iterative/setup-cml@v1
       
       - name: Setup environment
         run: |
@@ -42,6 +39,8 @@ jobs:
           #dvc push
 
       - name: CML Report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Extract metrics from dvclive
           echo "## Metrics" >> report.md
