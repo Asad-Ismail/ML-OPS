@@ -8,7 +8,7 @@ def format_metrics(filename):
 
     df = pd.json_normalize(data)
     df.index = ["Metrics"]
-    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_colwidth', None)
     return df.to_markdown()
 
 if __name__ == "__main__":
