@@ -44,8 +44,8 @@ jobs:
         run: |
           # Extract metrics from dvclive
           echo "## Metrics" >> report.md
-          dvc exp show --no-pager --csv > metrics.csv
-          python format_metrics.py metrics.csv >> report.md
+          dvc exp show --no-pager  >> report.md
+          #python format_metrics.py metrics.csv >> report.md
           # Send CML report
           cml comment create report.md
 
