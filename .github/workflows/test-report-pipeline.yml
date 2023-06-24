@@ -48,5 +48,5 @@ jobs:
           python format_metrics.py metrics.json >> report.md
           #python format_metrics.py metrics.csv >> report.md
           # Send CML report
-          cml comment create report.md
+          cml comment create report.md --target=pr
 
