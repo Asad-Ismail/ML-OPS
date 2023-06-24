@@ -40,7 +40,7 @@ jobs:
 
       - name: CML Report
         env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_TOKEN: ${{ secrets.mysecret }}
         run: |
           # Extract metrics from dvclive
           echo "## Metrics" >> report.md
