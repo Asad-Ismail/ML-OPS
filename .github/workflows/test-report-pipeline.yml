@@ -4,6 +4,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -18,20 +19,7 @@ jobs:
       
       - name: Setup environment
         run: |
-          # Your setup commands here.
-          # For example:
-          pip install -r requirements.txt
           pip install dvc matplotlib
-
-      - name: Configure DVC
-        run: |
-          #dvc init --no-scm --force
-          #dvc remote add -d storage s3://mybucket/data
-          #dvc config core.autosave true
-          #dvc config core.check_update false
-          #echo '[user]' >> .dvc/config
-          #echo '  name = github-actions' >> .dvc/config
-          #echo '  email = actions@github.com' >> .dvc/config
 
       - name: Pull data and model
         run: |
@@ -49,6 +37,7 @@ jobs:
       - name: CML Report
         env:
           REPO_TOKEN: ${{ secrets.mysecret }}
+          repo_token: ${{ secrets.mysecret }}
         run: |
 
           # Extract metrics from dvclive
@@ -57,11 +46,8 @@ jobs:
           echo "## Metrics" >> report.md
 
           python Pytorch-DVC-CML/segmentation_models_pytorch/generate_cml_report.py Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/metrics.json >> report.md
-          
-          #dvc plots show
 
-          #echo dvc_plots/index.html >> report.md
-          dvc plots diff --target Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/plots/metrics/valid_dataset_iou.tsv --show-vega main  >> vega.json
+          dvc plots diff --target valid_dataset_iou.tsv --show-vega main  >> vega.json
           vl2png vega.json -s 1.3 > vega.png
           echo '![](./vega.png)' >> report.md
 
