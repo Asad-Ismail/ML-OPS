@@ -43,9 +43,10 @@ jobs:
           REPO_TOKEN: ${{ secrets.mysecret }}
         run: |        
           # Publish images and save the URLs
+          echo "## Validation Dataset IoU" >> report.md
+          ls
           val_dataset_iou_url=$(cml-publish Val_Dataset_IoU.png --md)
           val_image_iou_url=$(cml-publish Val_Image_IoU.png --md)
-          ls
           # Create report.md
           echo "# CML Report" >> report.md
           echo "## Validation Dataset IoU" >> report.md
