@@ -44,8 +44,12 @@ jobs:
         run: |
           # Extract metrics from dvclive
           echo "## Metrics" >> report.md
-          dvc metrics show --all-commits --json > metrics.json
-          python format_metrics.py metrics.json >> report.md
+          #dvc metrics show --all-commits --json > metrics.json
+          python Pytorch-DVC-CML/segmentation_models_pytorch/generate_cml_report.py Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/metrics.json >> report.md
+          python Pytorch-DVC-CML/segmentation_models_pytorch/generate_plots.py Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/plots/metrics/valid_dataset_iou.tsv Val_Dataset_IoU 
+          python Pytorch-DVC-CML/segmentation_models_pytorch/generate_plots.py Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/plots/metrics/valid_per_image_iou.tsv Val_Image_IoU
+          echo '![](./Pytorch-DVC-CML/segmentation_models_pytorch/cml_reports/Val_Dataset_IoU.png "Validation IoU Dataset")' >> report.md
+          echo '![](./Pytorch-DVC-CML/segmentation_models_pytorch/cml_reports/Val_Image_IoU.png "Validation IoU Image")' >> report.md
           #python format_metrics.py metrics.csv >> report.md
           # Send CML report
           cml comment create report.md
