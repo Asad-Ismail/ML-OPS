@@ -1,0 +1,47 @@
+from flask import Flask, request, send_file
+from PIL import Image
+import io
+
+app = Flask(__name__)
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Get image from the POST request
+    if 'file' not in request.files:
+        return 'No file part', 400
+    file = request.files['file']
+
+    # Convert image to numpy array
+    image = np.array(Image.fromarray(file).resize((256, 256), Image.LINEAR))
+    image=np.moveaxis(image, -1, 0)
+
+    # Add batch dimension and send image through your model
+    model.eval()
+    with torch.no_grad():
+        input_tensor = torch.from_numpy(image).unsqueeze(0)
+        logits = model(input_tensor)
+    pr_masks = logits.sigmoid()
+
+    # Process the output as you did in your original code
+    pr_mask = pr_masks[0].numpy().squeeze()
+    pr_mask= np.where(pr_mask<0.5,0,1).astype('uint8')
+
+    # Convert masks to RGB and add a color map
+    pr_mask_rgb = cv2.cvtColor(pr_mask, cv2.COLOR_GRAY2BGR)
+    for c in range(3):
+        pr_mask_rgb[:, :, c] = np.where(pr_mask_rgb[:, :, c] > 0, color_map[2][c], 0)
+
+    # Overlay masks on the original image
+    overlay_pr = cv2.addWeighted(image, 0.7, pr_mask_rgb, 0.3, 0)
+
+    # Save the result to a BytesIO object
+    result = Image.fromarray(overlay_pr.astype('uint8'))
+    byte_arr = io.BytesIO()
+    result.save(byte_arr, format='PNG')
+    byte_arr.seek(0)
+    
+    # Send result image
+    return send_file(byte_arr, mimetype='image/png')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
