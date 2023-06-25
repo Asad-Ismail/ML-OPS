@@ -19,7 +19,7 @@ jobs:
       
       - name: Setup environment
         run: |
-          pip install dvc matplotlib
+          pip install dvc matplotlib pandas
 
       - name: Pull data and model
         run: |
