@@ -4,7 +4,7 @@ import torch
 
 class PetModel(pl.LightningModule):
 
-    def __init__(self, arch, encoder_name, in_channels, out_classes,dvc, **kwargs):
+    def __init__(self, arch, encoder_name, in_channels, out_classes,dvc=None, **kwargs):
         super().__init__()
         self.model = smp.create_model(
             arch, encoder_name=encoder_name, in_channels=in_channels, classes=out_classes, **kwargs
@@ -102,11 +102,12 @@ class PetModel(pl.LightningModule):
             f"{stage}_per_image_iou": per_image_iou,
             f"{stage}_dataset_iou": dataset_iou,
         }
-
-        for metric_name, metric_value in metrics.items():
-            self.dvclive.log_metric(metric_name, metric_value.item())
-        # Indicate that the current step is done and metrics should be saved
-        self.dvclive.next_step()
+        
+        if self.dvc:
+            for metric_name, metric_value in metrics.items():
+                self.dvclive.log_metric(metric_name, metric_value.item())
+            # Indicate that the current step is done and metrics should be saved
+            self.dvclive.next_step()
         
         self.log_dict(metrics, prog_bar=True)
 
