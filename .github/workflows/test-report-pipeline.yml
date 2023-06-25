@@ -37,9 +37,7 @@ jobs:
       - name: CML Report
         env:
           REPO_TOKEN: ${{ secrets.mysecret }}
-          repo_token: ${{ secrets.mysecret }}
         run: |
-
           # Extract metrics from dvclive
           git fetch --prune
 
