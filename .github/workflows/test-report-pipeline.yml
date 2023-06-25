@@ -47,7 +47,7 @@ jobs:
 
           dvc plots diff --target valid_dataset_iou.tsv --show-vega main  >> vega.json
           vl2png vega.json -s 1.3 > vega.png
-          echo '![](./vega.png)' >> report.md
+          #echo '![](./vega.png)' >> report.md
 
           # Send CML report
           #cml comment create report.md
