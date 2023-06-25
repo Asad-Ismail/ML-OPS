@@ -13,7 +13,7 @@ jobs:
           # Your setup commands here.
           # For example:
           pip install -r requirements.txt
-          pip install dvc
+          pip install dvc matplotlib
 
       - name: Configure DVC
         run: |
