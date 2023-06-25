@@ -67,4 +67,5 @@ jobs:
 
           # Send CML report
           #cml comment create report.md
+          cml comment create --pr --publish report.md
 
