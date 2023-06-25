@@ -5,8 +5,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
       - uses: iterative/setup-cml@v1
+
+      - uses: iterative/setup-dvc@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
       
       - name: Setup environment
         run: |
@@ -42,7 +50,10 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.mysecret }}
         run: |
+
           # Extract metrics from dvclive
+          git fetch --prune
+          
           echo "## Metrics" >> report.md
           python Pytorch-DVC-CML/segmentation_models_pytorch/generate_cml_report.py Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/metrics.json >> report.md
           dvc plots  diff --target Pytorch-DVC-CML/segmentation_models_pytorch/dvclive/plots/metrics/valid_dataset_iou.tsv --show-vega main  >> vega.json
