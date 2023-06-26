@@ -5,7 +5,6 @@ import torch
 import segmentation_models_pytorch as smp
 import numpy as np
 import cv2
-import request, jsonify
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import Counter, Histogram, Summary
 from segmentation_model import PetModel

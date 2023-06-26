@@ -4,3 +4,4 @@ dvclive
 pandas
 prometheus-flask-exporter
 prometheus-client
+requests
