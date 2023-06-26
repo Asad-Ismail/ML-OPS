@@ -9,7 +9,7 @@ from segmentation_model import PetModel
 
 # Load your trained model
 model = PetModel("FPN", "resnet34", in_channels=3, out_classes=1)
-checkpoint_path = "checkpoints/model-best.ckpt"
+checkpoint_path = "modelCheckpoints/model-best.ckpt"
 model.load_state_dict(torch.load(checkpoint_path)["state_dict"])
 
 # Define a color map for masks
@@ -22,10 +22,11 @@ def predict():
     # Get image from the POST request
     if 'file' not in request.files:
         return 'No file part', 400
-    file = request.files['file']
 
-    # Convert image to numpy array
-    image = np.array(Image.fromarray(file).resize((256, 256), Image.LINEAR))
+    file = request.files['file'].read()  # read the file bytes
+    image = Image.open(io.BytesIO(file))  # open the image
+    image = np.array(image.resize((256, 256), Image.LINEAR)) 
+
     vis_image= image.copy()
     image=np.moveaxis(image, -1, 0)
 
