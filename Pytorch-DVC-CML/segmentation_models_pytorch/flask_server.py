@@ -5,7 +5,11 @@ import torch
 import segmentation_models_pytorch as smp
 import numpy as np
 import cv2
+import request, jsonify
+from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import Counter, Histogram, Summary
 from segmentation_model import PetModel
+import time
 
 # Load your trained model
 model = PetModel("FPN", "resnet34", in_channels=3, out_classes=1)
@@ -17,7 +21,18 @@ color_map = [[0, 0, 128], [0, 128, 0], [128, 0, 0]]  # Blue, Green, Red
 
 app = Flask(__name__)
 
+metrics = PrometheusMetrics(app)
+
+# Metrics
+predict_counter = Counter('predictions', 'The total number of predictions')
+predict_hist = Histogram('prediction_scores', 'Distribution of prediction scores')
+non_zero_confidence = Summary('non_zero_confidence', 'Average confidence for non-zero predictions')
+model_summary = Summary('processing_time_model', 'Time spend forwad time model')
+predict_summary = Summary('processing_time_overall', 'Time spend processing request')
+
+
 @app.route('/predict', methods=['POST'])
+@predict_summary.time()
 def predict():
     # Get image from the POST request
     if 'file' not in request.files:
@@ -34,11 +49,24 @@ def predict():
     model.eval()
     with torch.no_grad():
         input_tensor = torch.from_numpy(image).unsqueeze(0)
+        start_time = time.monotonic()
         logits = model(input_tensor)
+        # End time
+        end_time = time.monotonic()
+        processing_time = end_time - start_time
+        model_summary.observe(processing_time)
+
     pr_masks = logits.sigmoid()
 
     # Process the output as you did in your original code
     pr_mask = pr_masks[0].numpy().squeeze()
+    
+    predict_hist.observe(pr_mask.copy().flatten())
+    # Compute the average confidence for non-zero predictions
+    non_zero_scores = pr_mask.copy().flatten()[pr_mask.copy().flatten() > 1e-2]
+    non_zero_average = np.mean(non_zero_scores)
+    non_zero_confidence.observe(non_zero_average)
+
     pr_mask = np.where(pr_mask<0.5,0,1).astype('uint8')
 
     # Convert masks to RGB and add a color map
@@ -54,6 +82,9 @@ def predict():
     byte_arr = io.BytesIO()
     result.save(byte_arr, format='PNG')
     byte_arr.seek(0)
+
+    # Increment counter
+    predict_counter.inc()
 
     # Send result image
     return send_file(byte_arr, mimetype='image/png')

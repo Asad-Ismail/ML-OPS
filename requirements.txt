@@ -2,3 +2,5 @@ dvc
 dvc-s3
 dvclive
 pandas
+prometheus-flask-exporter
+prometheus-client
