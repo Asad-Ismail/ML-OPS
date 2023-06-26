@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file
+from flask import Flask, send_from_directory, request, jsonify, Response
 from PIL import Image
 import io
 import torch
@@ -24,7 +25,7 @@ metrics = PrometheusMetrics(app)
 
 # Metrics
 predict_counter = Counter('predictions', 'The total number of predictions')
-predict_hist = Histogram('prediction_scores', 'Distribution of prediction scores')
+prediction_scores = Summary('prediction_scores', 'Quantiles of prediction scores', ['Quant'])
 non_zero_confidence = Summary('non_zero_confidence', 'Average confidence for non-zero predictions')
 model_summary = Summary('processing_time_model', 'Time spend forwad time model')
 predict_summary = Summary('processing_time_overall', 'Time spend processing request')
@@ -59,8 +60,11 @@ def predict():
 
     # Process the output as you did in your original code
     pr_mask = pr_masks[0].numpy().squeeze()
-    
-    predict_hist.observe(pr_mask.copy().flatten())
+
+    for quant in [0.1,0.2,0.3,0.4,0.5,0.6, 0.70, 0.80, 0.9, 0.99]:  # choose the quantiles you are interested in
+        score = np.percentile(pr_mask.copy().flatten(), quant * 100)
+        prediction_scores.labels(Quant=quant).observe(score)
+
     # Compute the average confidence for non-zero predictions
     non_zero_scores = pr_mask.copy().flatten()[pr_mask.copy().flatten() > 1e-2]
     non_zero_average = np.mean(non_zero_scores)
@@ -87,6 +91,12 @@ def predict():
 
     # Send result image
     return send_file(byte_arr, mimetype='image/png')
+
+
+# Add route for metrics
+@app.route('/metrics')
+def metrics():
+    return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
