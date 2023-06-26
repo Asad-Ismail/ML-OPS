@@ -26,6 +26,7 @@ def predict():
 
     # Convert image to numpy array
     image = np.array(Image.fromarray(file).resize((256, 256), Image.LINEAR))
+    vis_image= image.copy()
     image=np.moveaxis(image, -1, 0)
 
     # Add batch dimension and send image through your model
@@ -45,7 +46,7 @@ def predict():
         pr_mask_rgb[:, :, c] = np.where(pr_mask_rgb[:, :, c] > 0, color_map[2][c], 0)
 
     # Overlay masks on the original image
-    overlay_pr = cv2.addWeighted(image, 0.7, pr_mask_rgb, 0.3, 0)
+    overlay_pr = cv2.addWeighted(vis_image, 0.3, pr_mask_rgb, 0.7, 0)
 
     # Save the result to a BytesIO object
     result = Image.fromarray(overlay_pr.astype('uint8'))
