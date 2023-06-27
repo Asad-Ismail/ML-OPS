@@ -10,7 +10,9 @@ from segmentation_model import PetModel
 # Load your trained model
 model = PetModel("FPN", "resnet34", in_channels=3, out_classes=1)
 checkpoint_path = "modelCheckpoints/model-best.ckpt"
-model.load_state_dict(torch.load(checkpoint_path)["state_dict"])
+#model.load_state_dict(torch.load(checkpoint_path)["state_dict"])
+model.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu'))["state_dict"])
+
 
 img_path="pets_data/images/english_cocker_spaniel_141.jpg"
 
