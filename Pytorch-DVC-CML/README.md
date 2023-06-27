@@ -4,6 +4,41 @@ This project consists of a semantic segmentation machine learning pipeline for p
 
 Below is the high-level architecture of our pipeline.
 
+## Installation
+
+
+### Install promethus Grafana and minio
+
+```
+brew install prometheus grafana
+
+```
+
+### Run Prometheus
+
+```
+prometheus --config.file=prometheus.yml
+
+```
+
+### Run Grafana
+
+brew services start grafana
+
+### Install minio
+
+brew install minio/stable/minio
+
+### Run minio Server
+
+minio server /home/shared
+
+Grafana should be running in the background. You can access the Grafana dashboard by opening your web browser and navigating to http://localhost:3000. The default username and password are both 'admin'.
+
+You can test the deployment using the MinIO Console, an embedded web-based object browser built into MinIO Server. Point a web browser running on the host machine to http://127.0.0.1:9000 and log in with the root credentials. The MinIO deployment starts using default root credentials minioadmin:minioadmin
+
+
+
 Pipeline Architecture:
 
 ## Image Inference Server:
