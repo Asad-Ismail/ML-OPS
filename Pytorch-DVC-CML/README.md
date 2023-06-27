@@ -23,15 +23,21 @@ prometheus --config.file=prometheus.yml
 
 ### Run Grafana
 
+```
 brew services start grafana
+```
 
 ### Install minio
 
+```
 brew install minio/stable/minio
+```
 
 ### Run minio Server
 
+```
 minio server /home/shared
+```
 
 Grafana should be running in the background. You can access the Grafana dashboard by opening your web browser and navigating to http://localhost:3000. The default username and password are both 'admin'.
 
