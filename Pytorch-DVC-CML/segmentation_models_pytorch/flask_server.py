@@ -9,7 +9,23 @@ import cv2
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import Counter, Histogram, Summary
 from segmentation_model import PetModel
+from minio import Minio
+from minio.error import S3Error
 import time
+import uuid
+
+
+def calculate_entropy(mask):
+    return -np.sum(mask * np.log(mask + 1e-10))
+
+# Create a Minio client
+minio_client = Minio(
+    "localhost:9000",
+    access_key="minioadmin",
+    secret_key="minioadmin",
+    secure=False
+)
+
 
 # Load your trained model
 model = PetModel("FPN", "resnet34", in_channels=3, out_classes=1)
@@ -42,6 +58,18 @@ def predict():
     image = Image.open(io.BytesIO(file))  # open the image
     image = np.array(image.resize((256, 256), Image.LINEAR)) 
 
+    # Convert the input image and entropy score to bytes
+    image_bytes = io.BytesIO()
+    np.save(image_bytes, image)
+    image_bytes.seek(0)
+
+    # Generate a unique ID for this image
+    image_id = str(uuid.uuid4())
+
+    # Upload the image and entropy to MinIO
+    minio_client.put_object("images", f"{image_id}.npy", image_bytes, -1, "application/numpy")
+
+
     vis_image= image.copy()
     image=np.moveaxis(image, -1, 0)
 
@@ -60,6 +88,15 @@ def predict():
 
     # Process the output as you did in your original code
     pr_mask = pr_masks[0].numpy().squeeze()
+
+    entropy=calculate_entropy(pr_mask)
+    ## Calculate entropy of mask for active learning
+    entropy_bytes = io.BytesIO()
+    np.save(entropy_bytes, entropy)
+    entropy_bytes.seek(0)
+
+    minio_client.put_object("entropies", f"{image_id}.npy", entropy_bytes, -1, "application/numpy")
+
 
     for quant in [0.1,0.2,0.3,0.4,0.5,0.6, 0.70, 0.80, 0.9, 0.99]:  # choose the quantiles you are interested in
         score = np.percentile(pr_mask.copy().flatten(), quant * 100)
