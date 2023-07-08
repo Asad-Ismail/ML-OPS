@@ -1,6 +1,7 @@
 from minio import Minio
 import numpy as np
 import os
+import requests
 
 # Connect to MinIO
 minio_client = Minio(
@@ -9,6 +10,42 @@ minio_client = Minio(
     secret_key="minioadmin",
     secure=False
 )
+
+
+def send_for_annotation(image_data, image_name):
+    # Your CVAT instance url
+    CVAT_URL = "http://localhost:8080"
+
+    # Your CVAT credentials
+    auth = ("admin", "password")
+
+    # Define a task
+    task_data = {
+        "name": "My annotation task",
+        "labels": [{"name": "object"}]
+    }
+
+    # Create a new task
+    response = requests.post(f"{CVAT_URL}/api/v1/tasks", json=task_data, auth=auth)
+    if response.status_code != 201:
+        print(f"Failed to create task: {response.text}")
+        return
+
+    # Get the ID of the created task
+    task_id = response.json()["id"]
+
+    # Upload the image to the task
+    response = requests.post(
+        f"{CVAT_URL}/api/v1/tasks/{task_id}/data",
+        files={"client_files[0]": (image_name, image_data)},
+        auth=auth
+    )
+    if response.status_code != 202:
+        print(f"Failed to upload image: {response.text}")
+        return
+
+    print(f"Successfully sent image {image_name} for annotation")
+
 
 # Get list of entropy files in MinIO
 objects = minio_client.list_objects("entropies")
