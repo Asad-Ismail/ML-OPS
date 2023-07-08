@@ -63,8 +63,6 @@ def clear_bucket(bucket_name):
 #clear_bucket('entropies')
 
 
-
-
 # Use the function to load the data from the 'images' and 'entropies' buckets
 images_dict = load_data_from_minio('images')
 entropies_dict = load_data_from_minio('entropies')
